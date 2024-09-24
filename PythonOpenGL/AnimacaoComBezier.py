@@ -44,7 +44,6 @@ Personagens = []
 Curvas = []
 
 angulo = 0.0
-
 # ***********************************************************************************
 #
 # ***********************************************************************************
@@ -95,9 +94,6 @@ def init():
     # Define a cor do fundo da tela
     glClearColor(1, 1, 1, 1)
 
-    pontos_controle = ler_pontos_de_controle("pontos.txt")
-    curvas = ler_curvas("curvas.txt")
-
     CarregaModelos()
     CriaInstancias()
     CriaCurvas()
@@ -142,24 +138,6 @@ def reshape(w,h):
     glLoadIdentity()
 
 # **************************************************************
-def DesenhaEixos():
-    global Min, Max
-
-    Meio = Ponto(); 
-    Meio.x = (Max.x+Min.x)/2
-    Meio.y = (Max.y+Min.y)/2
-    Meio.z = (Max.z+Min.z)/2
-
-    glBegin(GL_LINES)
-    #  eixo horizontal
-    glVertex2f(Min.x,Meio.y)
-    glVertex2f(Max.x,Meio.y)
-    #  eixo vertical
-    glVertex2f(Meio.x,Min.y)
-    glVertex2f(Meio.x,Max.y)
-    glEnd()
-
-# ***********************************************************************************
 def DesenhaPersonagens():
     for I in Personagens:
         I.Desenha()
@@ -198,7 +176,7 @@ def display():
     glLoadIdentity()
 
     glColor3f(1,0,0) # R, G, B  [0..1]
-    DesenhaEixos()
+   # DesenhaEixos()
 
     DesenhaPersonagens()
     DesenhaCurvas()
@@ -229,77 +207,15 @@ def arrow_keys(a_keys: int, x: int, y: int):
     if a_keys == GLUT_KEY_DOWN:       # Se pressionar DOWN
         pass
     if a_keys == GLUT_KEY_LEFT:       # Se pressionar LEFT
-        Personagens[1].posicao.x -= 0.5
+        Personagens[0].posicao.x -= 0.5
         
     if a_keys == GLUT_KEY_RIGHT:      # Se pressionar RIGHT
-        Personagens[1].rotacao += 1
+        Personagens[0].rotacao += 1
 
     glutPostRedisplay()
 
-# ***********************************************************************************
-#
-# ***********************************************************************************
-def mouse(button: int, state: int, x: int, y: int):
-    global PontoClicado
-    if (state != GLUT_DOWN): 
-        return
-    if (button != GLUT_RIGHT_BUTTON):
-        return
-    #print ("Mouse:", x, ",", y)
-    # Converte a coordenada de tela para o sistema de coordenadas do 
-    # Personagens definido pela glOrtho
-    vport = glGetIntegerv(GL_VIEWPORT)
-    mvmatrix = glGetDoublev(GL_MODELVIEW_MATRIX)
-    projmatrix = glGetDoublev(GL_PROJECTION_MATRIX)
-    realY = vport[3] - y
-    worldCoordinate1 = gluUnProject(x, realY, 0, mvmatrix, projmatrix, vport)
-
-    PontoClicado = Ponto (worldCoordinate1[0],worldCoordinate1[1], worldCoordinate1[2])
-    PontoClicado.imprime("Ponto Clicado:")
-
-    glutPostRedisplay()
 
 # ***********************************************************************************
-#
-# ***********************************************************************************
-def mouseMove(x: int, y: int):
-    #glutPostRedisplay()
-    return
-
-
-# ***********************************************************************************
-
-def ler_pontos_de_controle(nome_arquivo):
-    pontos = []
-    with open(nome_arquivo, 'r') as arquivo:
-        numero_pontos = int(arquivo.readline().strip())
-        for _ in range(numero_pontos):
-            linha = arquivo.readline().strip()
-            x, y = map(float, linha.split())
-            pontos.append(Ponto(x, y))
-    return pontos
-
-def ler_curvas(nome_arquivo):
-    curvas = []
-    with open(nome_arquivo, 'r') as arquivo:
-        numero_curvas = int(arquivo.readline().strip())
-        for _ in range(numero_curvas):
-            linha = arquivo.readline().strip()
-            indices = list(map(int, linha.split()))
-            curvas.append(indices)
-    return curvas
-
-
-
-
-
-
-
-
-
-
-
-
 # Programa Principal
 # ***********************************************************************************
 
@@ -314,37 +230,9 @@ glutIdleFunc(animate)
 glutReshapeFunc(reshape)
 glutKeyboardFunc(keyboard)
 glutSpecialFunc(arrow_keys)
-glutMouseFunc(mouse)
 init()
 
 try:
     glutMainLoop()
 except SystemExit:
     pass
-
-
-def DesenhaCurvas():
-    for curva in curvas:
-        P0 = pontos_controle[curva[0]]
-        P1 = pontos_controle[curva[1]]
-        P2 = pontos_controle[curva[2]]
-
-        glBegin(GL_LINE_STRIP)
-        for t in [i / 100.0 for i in range(101)]:  # 101 pontos ao longo da curva
-            r = (P0 * (1 - t) ** 2) + (P1 * 2 * t * (1 - t)) + (P2 * t ** 2)
-            glVertex2f(r.x, r.y)
-        glEnd()
-
-
-def display():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-
-    glColor3f(1, 0, 0)  # Cor dos eixos
-    DesenhaEixos()
-
-    DesenhaPersonagens()
-    DesenhaCurvas()
-    
-    glutSwapBuffers()
