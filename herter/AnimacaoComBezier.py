@@ -40,22 +40,6 @@ Max = Ponto()
 Personagens = [] 
 
 # ***********************************************************************************
-# Lista de curvas Bezier
-Curvas = []
-
-angulo = 0.0
-# ***********************************************************************************
-#
-# ***********************************************************************************
-def CarregaModelos():
-    global MeiaSeta, Mastro
-    MeiaSeta.LePontosDeArquivo("MeiaSeta.txt")
-    Mastro.LePontosDeArquivo("Mastro.txt")
-    Mapa.LePontosDeArquivo("EstadoRS.txt");
-    A, B = Mapa.getLimits()
-    print("Limites do Mapa")
-    A.imprime()
-    B.imprime()
 
 # ***********************************************************************************
 def DesenhaPersonagem():
@@ -78,15 +62,9 @@ def CriaInstancias():
     Personagens[0].escala = Ponto (1,1,1) 
 
 
-# ***********************************************************************************
-def CriaCurvas():
-    global Curvas
-    C = Bezier(Ponto (-5,-5), Ponto (0,6), Ponto (5,-5))
-    Curvas.append(C)
-    C = Bezier(Ponto(5, -5), Ponto(15, 0), Ponto(12, 12))
-    Curvas.append(C)
-    C = Bezier(Ponto(-10, -5), Ponto(-15, 15), Ponto(12, 12))
-    Curvas.append(C)
+# **
+# ********************************************************************************
+
 
 # ***********************************************************************************
 def init():
@@ -94,19 +72,14 @@ def init():
     # Define a cor do fundo da tela
     glClearColor(1, 1, 1, 1)
 
-    CarregaModelos()
     CriaInstancias()
-    CriaCurvas()
-
+    
     d:float = 15
     Min = Ponto(-d,-d)
     Max = Ponto(d,d)
 
 # ****************************************************************
 def animate():
-    global angulo
-    print('a')
-    angulo = angulo + 1
     glutPostRedisplay()
 
 # ****************************************************************
@@ -138,7 +111,7 @@ def reshape(w,h):
     glLoadIdentity()
 
 # **************************************************************
-def DesenhaPersonagens():
+def DesenhaPersonagens(pontos_controle):
     for I in Personagens:
         I.Desenha()
 
@@ -153,17 +126,42 @@ def DesenhaPoligonoDeControle(curva):
     glEnd()
 
 # ***********************************************************************************
-def DesenhaCurvas():
-    v = 0
-    #for v, I in enumerate(Curvas):
-    for I in Curvas:
-        glLineWidth(3)
-        SetColor(Blue)
-        I.Traca()
+def ler_pontos_de_controle(nome_arquivo):
+    pontos = []
+    with open(nome_arquivo, 'r') as arquivo:
+        numero_pontos = int(arquivo.readline().strip())
+        for _ in range(numero_pontos):
+            linha = arquivo.readline().strip()
+            x, y = map(float, linha.split())
+            pontos.append(Ponto(x, y))
+    return pontos
+
+def ler_curvas(nome_arquivo):
+    curvas = []
+    with open(nome_arquivo, 'r') as arquivo:
+        numero_curvas = int(arquivo.readline().strip())
+        for _ in range(numero_curvas):
+            linha = arquivo.readline().strip()
+            curvas.append(list(map(int, linha.split())))
+    return curvas
+
+def desenhaBezier(smooth: int, curvas, pontos_controle):
+    for curva in curvas:
+        P0 = pontos_controle[curva[0]]
+        P1 = pontos_controle[curva[1]]
+        P2 = pontos_controle[curva[2]]
+
+        s = 1 / smooth
+        xs = (x * s for x in range(0, smooth + 1))
+
+        glColor3f(0, 0, 0)
         glLineWidth(2)
-        SetColor(Bronze)
-        I.TracaPoligonoDeControle()
-        #DesenhaPoligonoDeControle(v)
+        glBegin(GL_LINE_STRIP)
+        for x in xs:
+            r = (P0 * (1 - x) ** 2) + (P1 * 2 * x * (1 - x)) + (P2 * x ** 2)
+            glVertex2f(r.x, r.y)
+        glEnd()
+
 
 
 # ***********************************************************************************
@@ -176,10 +174,13 @@ def display():
     glLoadIdentity()
 
     glColor3f(1,0,0) # R, G, B  [0..1]
-   # DesenhaEixos()
+    pontos_controle = ler_pontos_de_controle('pontos.txt')
+    curvas = ler_curvas('curvas.txt')
 
-    DesenhaPersonagens()
-    DesenhaCurvas()
+    desenhaBezier(10000, curvas, pontos_controle)
+
+    DesenhaPersonagens(pontos_controle)
+
     
     glutSwapBuffers()
 
