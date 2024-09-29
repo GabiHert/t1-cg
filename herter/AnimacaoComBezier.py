@@ -25,6 +25,10 @@ from Poligonos import *
 from InstanciaBZ import *
 from Bezier import *
 from ListaDeCoresRGB import *
+import random
+import numpy as np
+
+
 # ***********************************************************************************
 
 # Modelos de Objetos
@@ -35,6 +39,14 @@ Mapa = Polygon()
 # Limites da Janela de Seleção
 Min = Ponto()
 Max = Ponto()
+
+class PontosCurva:
+    def __init__(self, P0, P1, P2) -> None:
+        self.P0 = P0
+        self.P3 = P1
+        self.P2 = P2
+
+pontos_curvas = []
 
 # lista de instancias do Personagens
 Personagens = [] 
@@ -48,18 +60,53 @@ def DesenhaPersonagem():
     Mapa.desenhaPoligono()
     pass
 
+def CurvaAleatoria():
+    global pontos_curvas
+    return pontos_curvas[random.randint(0, len(pontos_curvas) - 1)]
+
+def CalculaPontoXYDaCurva(t, pontos_curva):
+    return (1 - t)**2 * pontos_curva.P0 + 2 * (1 - t) * t * pontos_curva.P1 + t**2 * pontos_curva.P2
+
+def DerivadaBezier(t, pontos_curvas):
+    return 2 * (1 - t) * (pontos_curvas.P1 - pontos_curvas.P0) + 2 * t * (pontos_curvas.P2 - pontos_curvas.P1)
+
+def Rotacao(t, pontos_curva):
+    # Calcule o ponto futuro na curva
+    future_point = CalculaPontoXYDaCurva(t, pontos_curva)
+    
+    # Calcule o vetor direção
+    direction_vector = DerivadaBezier(t, pontos_curva)
+
+    # Calcule o vetor do objeto ao ponto futuro
+    object_to_future = future_point - pontos_curva.P0
+
+    # Normalize os vetores
+    direction_vector_normalized = direction_vector / np.linalg.norm(direction_vector)
+    object_to_future_normalized = object_to_future / np.linalg.norm(object_to_future)
+
+    # Calcule o ângulo em radianos
+    angle = np.arctan2(direction_vector_normalized[1], direction_vector_normalized[0]) - np.arctan2(object_to_future_normalized[1], object_to_future_normalized[0])
+    angle = np.degrees(angle)  # Converta para graus
+
+    # Ajuste o ângulo para estar entre 0 e 360 graus
+    if angle < 0:
+        angle += 360
+
+    return angle
 
 # ***********************************************************************************
 # Esta função deve instanciar todos os personagens do cenário
 # ***********************************************************************************
 def CriaInstancias():
-    global Personagens
+    global Personagens, pontos_controle, curvas, pontos_curvas
+    pontos_controle = ler_pontos_de_controle('pontos.txt')
+    curvas = ler_curvas('curvas.txt')
 
     Personagens.append(InstanciaBZ())
     Personagens[0].modelo = DesenhaPersonagem
-    Personagens[0].rotacao = 0
-    Personagens[0].posicao = Ponto(0,0)
-    Personagens[0].escala = Ponto (1,1,1) 
+    Personagens[0].rotacao = Rotacao(0, pontos_curvas)
+    Personagens[0].posicao = CurvaAleatoria().P1
+    Personagens[0].escala = Ponto(1,1,1) 
 
 
 # **
@@ -111,8 +158,9 @@ def reshape(w,h):
     glLoadIdentity()
 
 # **************************************************************
-def DesenhaPersonagens(pontos_controle):
+def DesenhaPersonagens(pontos_curvas):
     for I in Personagens:
+        I.AtualizaPosicao(pontos_curvas)
         I.Desenha()
 
 
@@ -146,10 +194,13 @@ def ler_curvas(nome_arquivo):
     return curvas
 
 def desenhaBezier(smooth: int, curvas, pontos_controle):
+    global pontos_curvas
     for curva in curvas:
         P0 = pontos_controle[curva[0]]
         P1 = pontos_controle[curva[1]]
         P2 = pontos_controle[curva[2]]
+
+        pontos_curvas.append(PontosCurva(P0,P1,P2))
 
         s = 1 / smooth
         xs = (x * s for x in range(0, smooth + 1))
@@ -174,12 +225,10 @@ def display():
     glLoadIdentity()
 
     glColor3f(1,0,0) # R, G, B  [0..1]
-    pontos_controle = ler_pontos_de_controle('pontos.txt')
-    curvas = ler_curvas('curvas.txt')
 
-    desenhaBezier(10000, curvas, pontos_controle)
+    desenhaBezier(50, curvas, pontos_controle)
 
-    DesenhaPersonagens(pontos_controle)
+    DesenhaPersonagens(pontos_curvas)
 
     
     glutSwapBuffers()

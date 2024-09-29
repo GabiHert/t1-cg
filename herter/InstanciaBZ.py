@@ -9,6 +9,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from Ponto import *
+from PontosCurva import *
 
 """ Classe Instancia """
 class InstanciaBZ:   
@@ -18,6 +19,7 @@ class InstanciaBZ:
         self.rotacao:float = 0.0
         self.modelo = None
         self.t = 0.0
+        self.pontos_curva = None
     
     """ Imprime os valores de cada eixo do ponto """
     # Faz a impressao usando sobrecarga de funcao
@@ -42,5 +44,14 @@ class InstanciaBZ:
         glScalef(self.escala.x, self.escala.y, self.escala.z)
         self.modelo()
         glPopMatrix()
+
+    def AtualizaPosicao(pontos_curvas):
+        ##
+        # preciso saber qual a curva que estou
+        # 
+        # descobir se a curva ja terminou
+        #   se ja terminou escolher outra curva que tenha inicio/fim no mesmo ponto 
+        #   se nao terminou 
+
 
     
