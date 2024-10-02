@@ -25,16 +25,13 @@ from Poligonos import *
 from InstanciaBZ import *
 from Bezier import *
 from ListaDeCoresRGB import *
-import random
-import numpy as np
+import Funcoes as f
 
 
 # ***********************************************************************************
 
 # Modelos de Objetos
 MeiaSeta = Polygon()
-Mastro = Polygon()
-Mapa = Polygon()
 
 # Limites da Janela de Seleção
 Min = Ponto()
@@ -54,45 +51,8 @@ Personagens = []
 # ***********************************************************************************
 
 # ***********************************************************************************
-def DesenhaPersonagem():
-    SetColor(YellowGreen)
-    glTranslatef(53,33,0)
-    Mapa.desenhaPoligono()
-    pass
 
-def CurvaAleatoria():
-    global pontos_curvas
-    return pontos_curvas[random.randint(0, len(pontos_curvas) - 1)]
 
-def CalculaPontoXYDaCurva(t, pontos_curva):
-    return  pontos_curva.P0 * ((1 - t)**2) +  pontos_curva.P1 * (2 * (1 - t) * t) + pontos_curva.P2 * t**2
-
-def DerivadaBezier(t, pontos_curva):
-    return  (pontos_curva.P1 - pontos_curva.P0) * (2 * (1 - t)) +  (pontos_curva.P2 - pontos_curva.P1) * (2 * t)
-
-def Rotacao(t, pontos_curva):
-    # Calcule o ponto futuro na curva
-    future_point = CalculaPontoXYDaCurva(t, pontos_curva)
-    
-    # Calcule o vetor direção
-    direction_vector = DerivadaBezier(t, pontos_curva)
-
-    # Calcule o vetor do objeto ao ponto futuro
-    object_to_future = future_point - pontos_curva.P0
-
-    # Normalize os vetores
-    direction_vector_normalized = direction_vector / np.linalg.norm(direction_vector)
-    object_to_future_normalized = object_to_future / np.linalg.norm(object_to_future)
-
-    # Calcule o ângulo em radianos
-    angle = np.arctan2(direction_vector_normalized[1], direction_vector_normalized[0]) - np.arctan2(object_to_future_normalized[1], object_to_future_normalized[0])
-    angle = np.degrees(angle)  # Converta para graus
-
-    # Ajuste o ângulo para estar entre 0 e 360 graus
-    if angle < 0:
-        angle += 360
-
-    return angle
 
 # ***********************************************************************************
 # Esta função deve instanciar todos os personagens do cenário
@@ -101,17 +61,17 @@ def CriaInstancias():
     global Personagens, pontos_controle, curvas, pontos_curvas
     pontos_controle = ler_pontos_de_controle('pontos.txt')
     curvas = ler_curvas('curvas.txt')
+    MeiaSeta.LePontosDeArquivo("seta.txt")
 
-    
-    desenhaBezier(50, curvas, pontos_controle)
-    
-    curva = CurvaAleatoria()
+    desenhaBezier(5, curvas, pontos_controle)
 
-    Personagens.append(InstanciaBZ())
-    Personagens[0].modelo = DesenhaPersonagem
-    Personagens[0].posicao = curva.P0
-    Personagens[0].rotacao = Rotacao(0, curva)
-    Personagens[0].escala = Ponto(1,1,1) 
+    curva = f.CurvaAleatoria(pontos_curvas)
+
+    Personagens.append(InstanciaBZ(pontos_curvas))
+    Personagens[0].modelo = MeiaSeta
+    Personagens[0].rotacao = 180
+    Personagens[0].posicao = curva.P1
+    Personagens[0].escala = Ponto(0.5,0.5,0.5) 
 
 
 # **
@@ -126,7 +86,7 @@ def init():
 
     CriaInstancias()
     
-    d:float = 15
+    d:float = 5
     Min = Ponto(-d,-d)
     Max = Ponto(d,d)
 
@@ -155,10 +115,7 @@ def reshape(w,h):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     # Cria uma folga na Janela de Selecão, com 10% das dimensoes do poligono
-    BordaX = abs(Max.x-Min.x)*0.1
-    BordaY = abs(Max.y-Min.y)*0.1
-    #glOrtho(Min.x-BordaX, Max.x+BordaX, Min.y-BordaY, Max.y+BordaY, 0.0, 1.0)
-    glOrtho(Min.x, Max.x, Min.y, Max.y, 0.0, 1.0)
+    gluOrtho2D(Min.x, Max.x, Min.y, Max.y)
     glMatrixMode (GL_MODELVIEW)
     glLoadIdentity()
 
@@ -277,7 +234,7 @@ def arrow_keys(a_keys: int, x: int, y: int):
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA)
 # Define o tamanho inicial da janela grafica do programa
-glutInitWindowSize(500, 500)
+glutInitWindowSize(1500, 1500)
 glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Exemplo de Criacao de Curvas Bezier")
 glutDisplayFunc(display)
