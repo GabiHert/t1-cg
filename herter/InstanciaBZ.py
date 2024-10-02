@@ -9,7 +9,6 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from Ponto import *
-from PontosCurva import *
 
 """ Classe Instancia """
 class InstanciaBZ:   
@@ -45,13 +44,11 @@ class InstanciaBZ:
         self.modelo()
         glPopMatrix()
 
-    def AtualizaPosicao(pontos_curvas):
-        ##
-        # preciso saber qual a curva que estou
-        # 
-        # descobir se a curva ja terminou
-        #   se ja terminou escolher outra curva que tenha inicio/fim no mesmo ponto 
-        #   se nao terminou 
-
-
-    
+    # def AtualizaPosicao(self ,pontos_curvas):
+    #     print()
+    #     ##
+    #     # preciso saber qual a curva que estou
+    #     # 
+    #     # descobir se a curva ja terminou
+    #     #   se ja terminou escolher outra curva que tenha inicio/fim no mesmo ponto 
+    #     #   se nao terminou 

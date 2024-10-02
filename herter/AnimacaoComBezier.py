@@ -43,7 +43,7 @@ Max = Ponto()
 class PontosCurva:
     def __init__(self, P0, P1, P2) -> None:
         self.P0 = P0
-        self.P3 = P1
+        self.P1 = P1
         self.P2 = P2
 
 pontos_curvas = []
@@ -65,10 +65,10 @@ def CurvaAleatoria():
     return pontos_curvas[random.randint(0, len(pontos_curvas) - 1)]
 
 def CalculaPontoXYDaCurva(t, pontos_curva):
-    return (1 - t)**2 * pontos_curva.P0 + 2 * (1 - t) * t * pontos_curva.P1 + t**2 * pontos_curva.P2
+    return pontos_curva.P0 * ((1 - t)**2) + pontos_curva.P1 * (2 * (1 - t) * t ) + pontos_curva.P2 * t**2
 
-def DerivadaBezier(t, pontos_curvas):
-    return 2 * (1 - t) * (pontos_curvas.P1 - pontos_curvas.P0) + 2 * t * (pontos_curvas.P2 - pontos_curvas.P1)
+def DerivadaBezier(t, pontos_curva):
+    return (pontos_curva.P1 - pontos_curva.P0) * (2 * (1 - t)) + (pontos_curva.P2 - pontos_curva.P1) * (2 * t )
 
 def Rotacao(t, pontos_curva):
     # Calcule o ponto futuro na curva
@@ -81,8 +81,8 @@ def Rotacao(t, pontos_curva):
     object_to_future = future_point - pontos_curva.P0
 
     # Normalize os vetores
-    direction_vector_normalized = direction_vector / np.linalg.norm(direction_vector)
-    object_to_future_normalized = object_to_future / np.linalg.norm(object_to_future)
+    direction_vector_normalized = direction_vector / np.linalg.norm(np.array([direction_vector.x, direction_vector.y, direction_vector.z]))
+    object_to_future_normalized = object_to_future / np.linalg.norm(np.array([object_to_future.x, object_to_future.y, object_to_future.z]))
 
     # Calcule o ângulo em radianos
     angle = np.arctan2(direction_vector_normalized[1], direction_vector_normalized[0]) - np.arctan2(object_to_future_normalized[1], object_to_future_normalized[0])
@@ -102,10 +102,14 @@ def CriaInstancias():
     pontos_controle = ler_pontos_de_controle('pontos.txt')
     curvas = ler_curvas('curvas.txt')
 
+    desenhaBezier(5, curvas, pontos_controle)
+
+    curva = CurvaAleatoria()
+
     Personagens.append(InstanciaBZ())
     Personagens[0].modelo = DesenhaPersonagem
-    Personagens[0].rotacao = Rotacao(0, pontos_curvas)
-    Personagens[0].posicao = CurvaAleatoria().P1
+    Personagens[0].rotacao = Rotacao(0, curva)
+    Personagens[0].posicao = curva.P1
     Personagens[0].escala = Ponto(1,1,1) 
 
 
