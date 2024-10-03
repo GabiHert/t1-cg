@@ -71,7 +71,7 @@ def CriaInstancias():
     Personagens[0].modelo = MeiaSeta
     Personagens[0].rotacao = 180
     Personagens[0].posicao = curva.P1
-    Personagens[0].escala = Ponto(0.5,0.5,0.5) 
+    Personagens[0].escala = Ponto(0.3,0.3,0.3) 
 
 
 # **
@@ -127,13 +127,13 @@ def DesenhaPersonagens(pontos_curvas):
 
 
 # ***********************************************************************************
-# Versao 
-def DesenhaPoligonoDeControle(curva):
-    glBegin(GL_LINE_STRIP)
-    for v in range(0,3):
-        P = Curvas[curva].getPC(v)
-        glVertex2d(P.x, P.y)
-    glEnd()
+# # Versao 
+# def DesenhaPoligonoDeControle(curva):
+#     glBegin(GL_LINE_STRIP)
+#     for v in range(0,3):
+#         P = Curvas[curva].getPC(v)
+#         glVertex2d(P.x, P.y)
+#     glEnd()
 
 # ***********************************************************************************
 def ler_pontos_de_controle(nome_arquivo):
@@ -234,7 +234,7 @@ def arrow_keys(a_keys: int, x: int, y: int):
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA)
 # Define o tamanho inicial da janela grafica do programa
-glutInitWindowSize(1500, 1500)
+glutInitWindowSize(1200, 1200)
 glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Exemplo de Criacao de Curvas Bezier")
 glutDisplayFunc(display)

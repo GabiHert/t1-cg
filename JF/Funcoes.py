@@ -1,5 +1,7 @@
 import random
 import numpy as np
+from Ponto import *
+import math
 
 
 def CurvaAleatoria(pontos_curvas):
@@ -34,3 +36,29 @@ def Rotacao(t, pontos_curva):
         angle += 360
 
     return angle
+
+
+def calculaComprimentoDaCurva(curva):
+    DeltaT = 1.0 / 50
+    t = DeltaT
+    ComprimentoTotalDaCurva = 0.0
+
+    P1 = Calcula(curva, 0.0)
+    while t < 1.0:
+        P2 = Calcula(curva, t)
+        ComprimentoTotalDaCurva += CalculaDistancia(P1,P2)
+        P1 = P2
+        t += DeltaT
+
+    P2 = Calcula(curva, 1.0)  # faz o fechamento da curva
+    ComprimentoTotalDaCurva += CalculaDistancia(P1,P2)
+
+    return ComprimentoTotalDaCurva
+
+def Calcula(curva, t):
+    UmMenosT = 1 - t
+    P = curva.P0 * UmMenosT * UmMenosT + curva.P1 * 2 * UmMenosT * t + curva.P2 * t * t
+    return P
+
+def CalculaDistancia(P1, P2):
+    return math.sqrt((P1.x - P2.x) ** 2 + (P1.y - P2.y) ** 2)

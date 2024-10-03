@@ -11,6 +11,7 @@ from OpenGL.GLU import *
 from Ponto import *
 import Funcoes as f
 from ListaDeCoresRGB import *
+import time
 #from PontosCurva import *
 
 """ Classe Instancia """
@@ -23,8 +24,10 @@ class InstanciaBZ:
         self.t = 0.0
         self.curva_atual = f.CurvaAleatoria(pontos_curvas)
         self.curva_proxima = f.CurvaAleatoria(pontos_curvas)
-        self.velocidade = 0.01
+        self.velocidade = 1.4
         self.cor = YellowGreen
+        self.tempo_inicial = 0.0
+        self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
     
     """ Imprime os valores de cada eixo do ponto """
     # Faz a impressao usando sobrecarga de funcao
@@ -53,28 +56,32 @@ class InstanciaBZ:
 
 
     def AtualizaPosicao(self, pontos_curva):
+        tempo_atual = time.time()
+        tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
+        self.tempo_inicial = tempo_atual
+        
         if self.curva_atual is None:
             self.curva_atual = pontos_curva  # Atribui uma curva aleatória no início
             
-            # self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)  # Calcula o comprimento da curva
+            self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)  # Calcula o comprimento da curva
 
-        # # Calcular o deslocamento com base na velocidade e no tempo decorrido
-        # deslocamento = self.velocidade * tempo_decorrido
+        # Calcular o deslocamento com base na velocidade e no tempo decorrido
+        deslocamento = self.velocidade * tempo_decorrido
 
-        # # Calcular deltaT com base no deslocamento e no comprimento da curva
-        # deltaT = deslocamento / self.comprimento_curva
+        # Calcular deltaT com base no deslocamento e no comprimento da curva
+        deltaT = deslocamento / self.comprimento_curva
 
-        # # Atualize o parâmetro t para mover o personagem ao longo da curva
-        # self.t += deltaT
+        # Atualize o parâmetro t para mover o personagem ao longo da curva
+        self.t += deltaT
         
-        self.t += 0.001
+        #self.t += 0.001
 
         # Atualize o parâmetro t para mover o personagem ao longo da curva
 
         if self.t > 1:  # Se t for maior que 1, o personagem chegou ao fim da curva
             self.t = 0  # Reseta t
             self.curva_atual = f.CurvaAleatoria(pontos_curva)
-            # self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
+            self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
 
         # Atualiza a posição do personagem com base na curva e no valor de t
         self.posicao = f.CalculaPontoXYDaCurva(self.t, self.curva_atual)
