@@ -5,6 +5,11 @@
 #       pinho@pucrs.br
 # ************************************************
 
+
+# backup versao antiga, antes de eu colocar o loop pra ver por todos os pontos
+# acaba q nem vai ser necessaria, pq é so pegar pelos pontos_controle
+
+
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
@@ -91,23 +96,10 @@ class InstanciaBZ:
             ponto_final = pontos_curva[indice_atual].P0
             ponto_inicial = pontos_curva[indice_atual].P2
 
-
-            print(f"Posição Atual: ({self.posicao.x}, {self.posicao.y}, {self.posicao.z})")
+            print(f"Posição Atual: {self.posicao}")
             print(f"Ponto Inicial: {ponto_inicial}")
             print(f"Ponto Final: {ponto_final}")
 
-
-
-            # Imprimir todos os pontos em curvas_por_p0 e curvas_por_p2
-            print("Curvas por P0:")
-            for p0, curvas in curvas_por_p0.items():
-                print(f"P0: {p0}, Curvas: {curvas}")
-        
-            print("Curvas por P2:")
-            for p2, curvas in curvas_por_p2.items():
-                print(f"P2: {p2}, Curvas: {curvas}")
-
-            # aqui tem q ser self.posicao.x = ponto_final.x ......
             if self.posicao == ponto_final:
                 curvas_adjacentes = curvas_por_p2[ponto_final] # Curvas conectadas ao P2
             elif self.posicao == ponto_inicial:

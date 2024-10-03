@@ -40,11 +40,22 @@ class Ponto:
             x = self.x - other.x
             y = self.y - other.y
             return Ponto(x, y)
+    
+    def __mul__(self, other):
+        if isinstance(other, int | float):
+            # If other is an int, multiply the coordinates by the integer
+            return Ponto(self.x * other, self.y * other)
+        elif isinstance(other, Ponto):
+            # If other is a Ponto, perform a custom multiplication (e.g., dot product)
+            return Ponto(self.x * other.x, self.y * other.y)
+        else:
+            raise TypeError("Unsupported type for multiplication: {}".format(type(other)))
 
-    def __mul__(self, other: int):
-            x = self.x * other
-            y = self.y * other
-            return Ponto(x, y)
+    def __truediv__(self, other):
+        if isinstance(other, (int, float)) and other != 0:
+            return Ponto(self.x / other, self.y / other, self.z / other)
+        else:
+            return self
 
     def rotacionaZ(self, angulo):
         anguloRad = angulo * 3.14159265359/180.0
@@ -66,6 +77,14 @@ class Ponto:
         zr =  self.y*math.sin(anguloRad) + self.z*math.cos(anguloRad)
         self.y = yr
         self.z = zr
+
+    def __eq__(self, other):
+        if isinstance(other, Ponto):
+            return self.x == other.x and self.y == other.y and self.z == other.z
+        return False
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
 
 # ********************************************************************** */
 #                                                                        */

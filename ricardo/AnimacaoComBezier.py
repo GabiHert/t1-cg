@@ -71,7 +71,7 @@ def CriaInstancias():
     Personagens[0].modelo = MeiaSeta
     Personagens[0].rotacao = 180
     Personagens[0].posicao = curva.P1
-    Personagens[0].escala = Ponto(0.5,0.5,0.5) 
+    Personagens[0].escala = Ponto(0.3,0.3,0.3) 
 
 
 # **
@@ -122,18 +122,18 @@ def reshape(w,h):
 # **************************************************************
 def DesenhaPersonagens(pontos_curvas):
     for I in Personagens:
-        I.AtualizaPosicao(pontos_curvas)
+        I.AtualizaPosicao(pontos_curvas, curvas_por_p0, curvas_por_p2)
         I.Desenha()
 
 
 # ***********************************************************************************
-# Versao 
-def DesenhaPoligonoDeControle(curva):
-    glBegin(GL_LINE_STRIP)
-    for v in range(0,3):
-        P = Curvas[curva].getPC(v)
-        glVertex2d(P.x, P.y)
-    glEnd()
+# # Versao 
+# def DesenhaPoligonoDeControle(curva):
+#     glBegin(GL_LINE_STRIP)
+#     for v in range(0,3):
+#         P = Curvas[curva].getPC(v)
+#         glVertex2d(P.x, P.y)
+#     glEnd()
 
 # ***********************************************************************************
 def ler_pontos_de_controle(nome_arquivo):
@@ -157,10 +157,28 @@ def ler_curvas(nome_arquivo):
 
 def desenhaBezier(smooth: int, curvas, pontos_controle):
     global pontos_curvas
+
+    # Dicionários para agrupar curvas por P0 e P2
+    global curvas_por_p0
+    curvas_por_p0 = {}
+
+    global curvas_por_p2
+    curvas_por_p2 = {}
+
     for curva in curvas:
         P0 = pontos_controle[curva[0]]
         P1 = pontos_controle[curva[1]]
         P2 = pontos_controle[curva[2]]
+
+        # Adiciona a curva ao grupo de P0
+        if P0 not in curvas_por_p0:
+            curvas_por_p0[P0] = []
+        curvas_por_p0[P0].append(curva)
+
+        # Adiciona a curva ao grupo de P2
+        if P2 not in curvas_por_p2:
+            curvas_por_p2[P2] = []
+        curvas_por_p2[P2].append(curva)
 
         pontos_curvas.append(PontosCurva(P0,P1,P2))
 
@@ -234,7 +252,7 @@ def arrow_keys(a_keys: int, x: int, y: int):
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA)
 # Define o tamanho inicial da janela grafica do programa
-glutInitWindowSize(1500, 1500)
+glutInitWindowSize(1200, 1200)
 glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Exemplo de Criacao de Curvas Bezier")
 glutDisplayFunc(display)
