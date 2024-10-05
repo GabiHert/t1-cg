@@ -31,7 +31,7 @@ import Funcoes as f
 # ***********************************************************************************
 
 # Modelos de Objetos
-MeiaSeta = Polygon()
+modeloPersonagem = Polygon()
 
 # Limites da Janela de Seleção
 Min = Ponto()
@@ -42,8 +42,10 @@ class PontosCurva:
         self.P0 = P0
         self.P1 = P1
         self.P2 = P2
+        self.espessura = 2
 
 pontos_curvas = []
+grupos_de_pontos = {}
 
 # lista de instancias do Personagens
 Personagens = [] 
@@ -58,25 +60,55 @@ Personagens = []
 # Esta função deve instanciar todos os personagens do cenário
 # ***********************************************************************************
 def CriaInstancias():
-    global Personagens, pontos_controle, curvas, pontos_curvas
+    global Personagens, pontos_controle, curvas, pontos_curvas, grupos_de_pontos
+
     pontos_controle = ler_pontos_de_controle('pontos.txt')
     curvas = ler_curvas('curvas.txt')
-    MeiaSeta.LePontosDeArquivo("seta.txt")
+    modeloPersonagem.LePontosDeArquivo("seta.txt")
 
-    desenhaBezier(5, curvas, pontos_controle)
+    for curva in curvas:
+        P0 = pontos_controle[curva[0]]
+        P1 = pontos_controle[curva[1]]
+        P2 = pontos_controle[curva[2]]
+        pontos_curvas.append(PontosCurva(P0,P1,P2))
+
+    desenhaBezier(5)
+
+    for pontos_curva in pontos_curvas:
+        chave_p0 = geraChave(pontos_curva.P0)
+        if chave_p0 not in grupos_de_pontos:
+            grupos_de_pontos[chave_p0] = []
+        grupos_de_pontos[chave_p0].append(pontos_curva)
+
+        chave_p2 = geraChave(pontos_curva.P2)
+            # Adiciona a curva ao grupo de P2
+        if chave_p2 not in grupos_de_pontos:
+            grupos_de_pontos[chave_p2] = []
+        grupos_de_pontos[chave_p2].append(pontos_curva)
 
     curva = f.CurvaAleatoria(pontos_curvas)
 
     Personagens.append(InstanciaBZ(pontos_curvas))
-    Personagens[0].modelo = MeiaSeta
-    Personagens[0].rotacao = 180
+    Personagens[0].modelo = modeloPersonagem
+    Personagens[0].rotacao = 0
     Personagens[0].posicao = curva.P1
     Personagens[0].escala = Ponto(0.3,0.3,0.3) 
+    
 
 
 # **
 # ********************************************************************************
 
+def DesenhaPersonagens(pontos_curvas):
+    for I in Personagens:
+        I.AtualizaPosicao(grupos_de_pontos)
+        I.Desenha()
+        
+def CriaPersonagem(posicao, direcao, i):
+    Personagens.append(InstanciaBZ(pontos_curvas))
+    Personagens[i].modelo = modeloPersonagem
+    Personagens[i].posicao = posicao
+    Personagens[i].direcao = direcao
 
 # ***********************************************************************************
 def init():
@@ -120,10 +152,7 @@ def reshape(w,h):
     glLoadIdentity()
 
 # **************************************************************
-def DesenhaPersonagens(pontos_curvas):
-    for I in Personagens:
-        I.AtualizaPosicao(pontos_curvas, curvas_por_p0, curvas_por_p2)
-        I.Desenha()
+
 
 
 # ***********************************************************************************
@@ -155,41 +184,17 @@ def ler_curvas(nome_arquivo):
             curvas.append(list(map(int, linha.split())))
     return curvas
 
-def desenhaBezier(smooth: int, curvas, pontos_controle):
+def desenhaBezier(smooth: int):
     global pontos_curvas
-
-    # Dicionários para agrupar curvas por P0 e P2
-    global curvas_por_p0
-    curvas_por_p0 = {}
-
-    global curvas_por_p2
-    curvas_por_p2 = {}
-
-    for curva in curvas:
-        P0 = pontos_controle[curva[0]]
-        P1 = pontos_controle[curva[1]]
-        P2 = pontos_controle[curva[2]]
-
-        # Adiciona a curva ao grupo de P0
-        if P0 not in curvas_por_p0:
-            curvas_por_p0[P0] = []
-        curvas_por_p0[P0].append(curva)
-
-        # Adiciona a curva ao grupo de P2
-        if P2 not in curvas_por_p2:
-            curvas_por_p2[P2] = []
-        curvas_por_p2[P2].append(curva)
-
-        pontos_curvas.append(PontosCurva(P0,P1,P2))
-
+    for pontos_curva in pontos_curvas:
         s = 1 / smooth
         xs = (x * s for x in range(0, smooth + 1))
 
-        glColor3f(0, 0, 0)
-        glLineWidth(2)
+        glColor3f(pontos_curva.P0.x/2 + 0.3,pontos_curva.P1.x/3 + 0.3 ,pontos_curva.P2.x/2 + 0.3)
+        glLineWidth(pontos_curva.espessura)
         glBegin(GL_LINE_STRIP)
         for x in xs:
-            r = (P0 * (1 - x) ** 2) + (P1 * 2 * x * (1 - x)) + (P2 * x ** 2)
+            r = (pontos_curva.P0 * (1 - x) ** 2) + (pontos_curva.P1 * 2 * x * (1 - x)) + (pontos_curva.P2 * x ** 2)
             glVertex2f(r.x, r.y)
         glEnd()
 
@@ -206,7 +211,7 @@ def display():
 
     glColor3f(1,0,0) # R, G, B  [0..1]
 
-    desenhaBezier(50, curvas, pontos_controle)
+    desenhaBezier(50)
 
     DesenhaPersonagens(pontos_curvas)
 
@@ -237,10 +242,10 @@ def arrow_keys(a_keys: int, x: int, y: int):
     if a_keys == GLUT_KEY_DOWN:       # Se pressionar DOWN
         pass
     if a_keys == GLUT_KEY_LEFT:       # Se pressionar LEFT
-        Personagens[0].posicao.x -= 0.5
-        
-    if a_keys == GLUT_KEY_RIGHT:      # Se pressionar RIGHT
-        Personagens[0].rotacao += 1
+        Personagens[0].direcao = False         
+    if a_keys == GLUT_KEY_RIGHT:       # Se pressionar LEFT
+        Personagens[0].direcao = True         
+
 
     glutPostRedisplay()
 
@@ -252,7 +257,7 @@ def arrow_keys(a_keys: int, x: int, y: int):
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA)
 # Define o tamanho inicial da janela grafica do programa
-glutInitWindowSize(1200, 1200)
+glutInitWindowSize(720, 720)
 glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Exemplo de Criacao de Curvas Bezier")
 glutDisplayFunc(display)

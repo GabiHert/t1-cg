@@ -13,22 +13,27 @@ import Funcoes as f
 from ListaDeCoresRGB import *
 import time
 import random
-#from PontosCurva import *
+from Poligonos import *
 
 """ Classe Instancia """
 class InstanciaBZ:   
     def __init__(self, pontos_curvas):
+        self.flag = False
+        self.flag2 = False
+        self.direcao = True
         self.posicao = Ponto (0,0,0) 
-        self.escala = Ponto (1,1,1)
+        self.escala = Ponto (0.3,0.3,0.3)
         self.rotacao:float = 0.0
         self.modelo = None 
         self.t = 0.0
         self.curva_atual = f.CurvaAleatoria(pontos_curvas)
         self.curva_proxima = f.CurvaAleatoria(pontos_curvas)
-        self.velocidade = 1.4
+        self.velocidade = 2.5
         self.cor = YellowGreen
         self.tempo_inicial = 0.0
         self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
+        self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
+        self.ponto_final = f.CalculaPontoXYDaCurva(1, self.curva_atual)
         self.indice_curva = f.retornaIndiceCurva
     
     """ Imprime os valores de cada eixo do ponto """
@@ -48,29 +53,36 @@ class InstanciaBZ:
         #print ("Desenha")
         #self.escala.imprime("\tEscala: ")
         #print ("\tRotacao: ", self.rotacao)
+        #centroid = calculaCentroid(self.modelo)
         glPushMatrix()
         glTranslatef(self.posicao.x, self.posicao.y, 0)
-        glRotatef(self.rotacao, 0, 0, 1)
+        #glTranslatef(-centroid.x, -centroid.y, 0)
+        glRotatef(self.rotacao, 0,0,1)
+        #glTranslatef(centroid.x, centroid.y, 0)
         glScalef(self.escala.x, self.escala.y, self.escala.z)
         SetColor(self.cor)
+        glLineWidth(3)
         self.modelo.desenhaPoligono()
         glPopMatrix()
+    
+    def calcula_centroid(self):
+    # Supondo que self.modelo tem os vértices do triângulo
+        x1, y1 = self.modelo.vertices[0].x, self.modelo.vertices[0].y
+        x2, y2 = self.modelo.vertices[1].x, self.modelo.vertices[1].y
+        x3, y3 = self.modelo.vertices[2].x, self.modelo.vertices[2].y
+        return Ponto((x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3)
 
 
-    def AtualizaPosicao(self, pontos_curva, curvas_por_p0, curvas_por_p2):
+    def AtualizaPosicao(self, grupos_de_pontos):
         tempo_atual = time.time()
-        tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
-        self.tempo_inicial = tempo_atual
-        
-        if self.curva_atual is None:
-            self.curva_atual = pontos_curva  # Atribui uma curva aleatória no início
-            
-            #nao funciona, precisamos conseguir saber a curva atual corretamente pra conseguir pegar o P0 e P2 dela
-            # a gente tem a lista de curvas pontos_curva, e a curva_atual, a gente precisa do indice da curva_atual no pontos curva
-            #self.indice_curva = random.randint(0, len(pontos_curva) - 1)  # Armazena o índice da curva aleatória
+    
+        if self.flag2:
+            tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
+        else:
+            tempo_decorrido = 0.0        
+            self.flag2 = True
 
-            
-            self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)  # Calcula o comprimento da curva
+        self.tempo_inicial = tempo_atual
 
         # Calcular o deslocamento com base na velocidade e no tempo decorrido
         deslocamento = self.velocidade * tempo_decorrido
@@ -79,48 +91,106 @@ class InstanciaBZ:
         deltaT = deslocamento / self.comprimento_curva
 
         # Atualize o parâmetro t para mover o personagem ao longo da curva
-        self.t += deltaT
+        chegou_ao_fim = False
+        if self.direcao:
+            self.t += deltaT
+            chegou_ao_fim = self.t >= 1
+        else: 
+            self.t -= deltaT
+            chegou_ao_fim = self.t <= 0
 
         # cuurvas adj
         curvas_adjacentes = []
 
-        if self.t > 1:  # Se t for maior que 1, o personagem chegou ao fim da curva
-            self.t = 0  # Reseta t
+        if  chegou_ao_fim:  # Se t for maior que 1, o personagem chegou ao fim da curva
+            if self.flag:
+                if posicaoAproximada(self.ponto_final, self.posicao):
+                    chave = geraChave(self.ponto_final)
+                elif posicaoAproximada(self.ponto_inicial, self.posicao):
+                    chave = geraChave(self.ponto_inicial)
+                curvas_adjacentes = grupos_de_pontos[chave]
 
-            indice_atual = f.retornaIndiceCurva()
-            ponto_final = pontos_curva[indice_atual].P0
-            ponto_inicial = pontos_curva[indice_atual].P2
-
-
-            print(f"Posição Atual: ({self.posicao.x}, {self.posicao.y}, {self.posicao.z})")
-            print(f"Ponto Inicial: {ponto_inicial}")
-            print(f"Ponto Final: {ponto_final}")
-
-
-
-            # Imprimir todos os pontos em curvas_por_p0 e curvas_por_p2
-            print("Curvas por P0:")
-            for p0, curvas in curvas_por_p0.items():
-                print(f"P0: {p0}, Curvas: {curvas}")
-        
-            print("Curvas por P2:")
-            for p2, curvas in curvas_por_p2.items():
-                print(f"P2: {p2}, Curvas: {curvas}")
-
-            # aqui tem q ser self.posicao.x = ponto_final.x ......
-            if self.posicao == ponto_final:
-                curvas_adjacentes = curvas_por_p2[ponto_final] # Curvas conectadas ao P2
-            elif self.posicao == ponto_inicial:
-                curvas_adjacentes = curvas_por_p0[ponto_final]  # Curvas conectadas ao P0
-
-            print(f"Curvas Adjacentes: {curvas_adjacentes}")
+                print(f"Curvas Adjacentes: {curvas_adjacentes}")
+            else: 
+                self.flag = True
 
             if curvas_adjacentes:  # Verifica se há curvas adjacentes antes de escolher aleatoriamente
-                self.curva_atual = random.choice(curvas_adjacentes)
+                proxima_curva = self.curva_atual
+
+                while proxima_curva == self.curva_atual:  # Evita que a próxima curva seja a mesma que a atual
+                    proxima_curva = random.choice(curvas_adjacentes)
+
+                self.curva_atual = proxima_curva
+                if posicaoAproximada(self.curva_atual.P0, self.posicao):
+                    self.direcao = True
+                    self.t = 0 
+                else:
+                    self.direcao = False
+                    self.t = 1 
+                self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
+                self.ponto_final = f.CalculaPontoXYDaCurva(1, self.curva_atual)
                 self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
+                self.flag = False
+                self.flag2 = False
             else:
                 print("Nenhuma curva adjacente disponível.")
 
         # Atualiza a posição do personagem com base na curva e no valor de t
         self.posicao = f.CalculaPontoXYDaCurva(self.t, self.curva_atual)
-        self.rotacao = f.Rotacao(self.t, self.curva_atual)
+        self.rotacao = f.Rotacao(self.t, self.curva_atual, self.direcao)
+        
+    def calcularCurvasAdjacentes(self, grupos_de_pontos):
+        if self.flag:
+            if posicaoAproximada(self.ponto_final, self.posicao):
+                chave = geraChave(self.ponto_final)
+            elif posicaoAproximada(self.ponto_inicial, self.posicao):
+                chave = geraChave(self.ponto_inicial)
+            curvas_adjacentes = grupos_de_pontos[chave]
+
+            print(f"Curvas Adjacentes: {curvas_adjacentes}")
+        else: 
+            self.flag = True
+
+    def calculaProximaCurva(self, curvas_adjacentes):
+        if curvas_adjacentes:  # Verifica se há curvas adjacentes antes de escolher aleatoriamente
+            proxima_curva = self.curva_atual
+
+            while proxima_curva == self.curva_atual:  # Evita que a próxima curva seja a mesma que a atual
+                proxima_curva = random.choice(curvas_adjacentes)
+
+            self.curva_atual = proxima_curva
+            if posicaoAproximada(self.curva_atual.P0, self.posicao):
+                self.direcao = True
+                self.t = 0 
+            else:
+                self.direcao = False
+                self.t = 1 
+            self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
+            self.ponto_final = f.CalculaPontoXYDaCurva(1, self.curva_atual)
+            self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
+            self.flag = False
+            self.flag2 = False
+        else:
+            print("Nenhuma curva adjacente disponível.")
+
+def posicaoAproximada(ponto, posicao):
+    aproximacao = 0.2
+    return (posicao.x < ponto.x+aproximacao and posicao.x > ponto.x-aproximacao) and (posicao.y < ponto.y+aproximacao and posicao.y > ponto.y-aproximacao)
+
+class ChavePonto:
+    def __init__(self, ponto, chave):
+        self.ponto = ponto
+        self.chave = chave
+chaves_pontos= []
+
+def geraChave(ponto):
+    global chaves_pontos
+    
+    for chave_ponto in chaves_pontos:
+        if posicaoAproximada(chave_ponto.ponto, ponto):
+            return chave_ponto.chave
+    
+    chave = f"{ponto.x}-{ponto.y}"
+    chaves_pontos.append(ChavePonto(ponto, chave))
+
+    return chave
