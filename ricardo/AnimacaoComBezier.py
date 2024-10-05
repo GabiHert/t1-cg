@@ -93,7 +93,14 @@ def CriaInstancias():
     Personagens[0].rotacao = 0
     Personagens[0].posicao = curva.P1
     Personagens[0].escala = Ponto(0.3,0.3,0.3) 
-    
+    Personagens[0].usuario = True
+
+    Personagens.append(InstanciaBZ(pontos_curvas))
+    Personagens[1].modelo = modeloPersonagem
+    Personagens[1].rotacao = 0
+    Personagens[1].posicao = curva.P1
+    Personagens[1].escala = Ponto(0.3,0.3,0.3) 
+
 
 
 # **
@@ -101,7 +108,7 @@ def CriaInstancias():
 
 def DesenhaPersonagens(pontos_curvas):
     for I in Personagens:
-        I.AtualizaPosicao(grupos_de_pontos)
+        I.AtualizaPosicao(grupos_de_pontos, Personagens)
         I.Desenha()
         
 def CriaPersonagem(posicao, direcao, i):

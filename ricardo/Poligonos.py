@@ -15,6 +15,9 @@ class Polygon:
     def __init__(self):
         self.Vertices = [] # atributo do objeto
 
+    def getVertices(self):
+        return copy.deepcopy(self.Vertices)
+    
     def getNVertices(self):
         return len(self.Vertices)
     

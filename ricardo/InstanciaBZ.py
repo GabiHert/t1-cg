@@ -20,6 +20,7 @@ class InstanciaBZ:
     def __init__(self, pontos_curvas):
         self.flag = False
         self.flag2 = False
+        self.usuario = False
         self.direcao = True
         self.posicao = Ponto (0,0,0) 
         self.escala = Ponto (0.3,0.3,0.3)
@@ -64,18 +65,36 @@ class InstanciaBZ:
         glLineWidth(3)
         self.modelo.desenhaPoligono()
         glPopMatrix()
-    
-    def calcula_centroid(self):
-    # Supondo que self.modelo tem os vértices do triângulo
-        x1, y1 = self.modelo.vertices[0].x, self.modelo.vertices[0].y
-        x2, y2 = self.modelo.vertices[1].x, self.modelo.vertices[1].y
-        x3, y3 = self.modelo.vertices[2].x, self.modelo.vertices[2].y
-        return Ponto((x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3)
+
+    def verifica_colisao(self, Personagens):
+
+        for outra in Personagens:
+            if outra != self:  # Não verificar colisão consigo mesmo
+                if outra.curva_atual == self.curva_atual:
+                
+                # Calcular a distância entre os centros atuais
+                    distancia = math.sqrt((self.posicao.x - outra.posicao.x) ** 2 + 
+                                      (self.posicao.y - outra.posicao.y) ** 2)
+
+                # Verifique se a distância é menor que um limite (neste caso, 0.05)
+                    if distancia < (0.35):  
+                        print("Distância:", distancia)
+                        return True
+                
+        return False
 
 
-    def AtualizaPosicao(self, grupos_de_pontos):
+
+    def AtualizaPosicao(self, grupos_de_pontos, Personagens):
         tempo_atual = time.time()
     
+        colisao = self.verifica_colisao(Personagens)
+        if colisao == True:
+            print("COLISAO PARCEIRO!!!!")
+            for personagem in Personagens:
+                personagem.velocidade = 0
+
+
         if self.flag2:
             tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
         else:
