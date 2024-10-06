@@ -7,6 +7,8 @@
 
 import math
 
+
+
 """ Classe Ponto """
 class Ponto:   
     def __init__(self, x=0,y=0,z=0):
@@ -43,10 +45,8 @@ class Ponto:
     
     def __mul__(self, other):
         if isinstance(other, int | float):
-            # If other is an int, multiply the coordinates by the integer
             return Ponto(self.x * other, self.y * other)
         elif isinstance(other, Ponto):
-            # If other is a Ponto, perform a custom multiplication (e.g., dot product)
             return Ponto(self.x * other.x, self.y * other.y)
         else:
             raise TypeError("Unsupported type for multiplication: {}".format(type(other)))
@@ -77,6 +77,14 @@ class Ponto:
         zr =  self.y*math.sin(anguloRad) + self.z*math.cos(anguloRad)
         self.y = yr
         self.z = zr
+
+    def __eq__(self, other):
+        if isinstance(other, Ponto):
+            return self.x == other.x and self.y == other.y and self.z == other.z
+        return False
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
 
 # ********************************************************************** */
 #                                                                        */

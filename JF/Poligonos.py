@@ -92,6 +92,8 @@ class Polygon:
         return self.getLimits()
 
 
+
+
     def getAresta(self, n):
         P1 = self.Vertices[n]
         n1 = (n+1) % self.getNVertices()

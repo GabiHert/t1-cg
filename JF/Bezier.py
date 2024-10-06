@@ -53,4 +53,23 @@ class Bezier:
     def getPC(self, i):
         temp = copy.deepcopy(self.Coords[i])
         return temp
-            
+    
+    def calcula_distancia(self, P1, P2):
+        # Função que calcula a distância entre dois pontos P1 e P2
+        return ((P2.x - P1.x)**2 + (P2.y - P1.y)**2)**0.5
+
+    def calculaComprimentoDaCurva(self):
+        # Função que calcula o comprimento total da curva Bezier
+        DeltaT = 1.0 / 50
+        t = DeltaT
+        self.ComprimentoTotalDaCurva = 0
+
+        P1 = self.Calcula(0.0)
+        while t < 1.0:
+            P2 = self.Calcula(t)
+            self.ComprimentoTotalDaCurva += self.calcula_distancia(P1, P2)
+            P1 = P2
+            t += DeltaT
+
+        P2 = self.Calcula(1.0)  # Faz o fechamento da curva
+        self.ComprimentoTotalDaCurva += self.calcula_distancia(P1, P2)        
