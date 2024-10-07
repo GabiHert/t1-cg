@@ -55,7 +55,7 @@ class InstanciaBZ:
             self.cor = Red
             self.width = 5
         else:
-            self.cor = random.choice(coresCurvas)
+            self.cor = random.choice(coresPersonagem)
             self.width = 3
         self.tempo_inicial = 0.0
         self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)

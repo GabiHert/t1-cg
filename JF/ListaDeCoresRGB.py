@@ -47,7 +47,7 @@ colors = [
 (0.917647,0.917647,0.678431),	#	MediumGoldenrod
 (0.576471,0.439216,0.858824),	#	MediumOrchid
 (0.258824,0.435294,0.258824),	#	MediumSeaGreen
-(0.498039,1.0,0),	#	MediumSlateBlue
+(0.498039,0.5,1.0),	#	MediumSlateBlue
 (0.498039,1.0,0),	#	MediumSpringGreen
 (0.439216,0.858824,0.858824),	#	MediumTurquoise
 (0.858824,0.439216,0.576471),	#	MediumVioletRed
@@ -206,9 +206,10 @@ VeryDarkBrown	=	89
 DarkBrown	=	90
 DarkTan	=	91
 GreenCopper	=	92
-Med_Purple = 93
-Light_Purple = 94
-Very_Light_Purple = 95
+DkGreenCopper = 93
+Med_Purple = 94
+Light_Purple = 95
+Very_Light_Purple = 96
 
 
 
@@ -224,9 +225,8 @@ def SetColor (cor):
 def ColorSet(color):
     glColor3f(*color)
     
-coresCurvas = [
+coresPersonagem = [
     Yellow,
-    Red,
     Green,
     Blue,
     Aquamarine,
@@ -267,7 +267,7 @@ coresCurvas = [
     MandarinOrange
 ]
 
-brighter_colors = [
+coresCurvas = [
     Orange,
     NeonBlue,
     Orchid,

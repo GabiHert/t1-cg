@@ -200,7 +200,7 @@ def desenhaBezier(smooth: int):
         xs = (x * s for x in range(0, smooth + 1))
         
 
-        SetColor(brighter_colors[i])
+        SetColor(coresCurvas[i])
         glLineWidth(pontos_curva.espessura)
         glBegin(GL_LINE_STRIP)
         for x in xs:
