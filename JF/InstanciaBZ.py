@@ -122,6 +122,12 @@ class InstanciaBZ:
         self.direcao = direcao
         ponto_destino = self.calculaPontoDestino(self.direcao, self.curva_atual.P0, self.curva_atual.P2)
         self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
+        if direcao:
+            self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
+            self.ponto_final = f.CalculaPontoXYDaCurva(1, self.curva_atual)
+        else:
+            self.ponto_inicial = f.CalculaPontoXYDaCurva(1, self.curva_atual)
+            self.ponto_final = f.CalculaPontoXYDaCurva(0,  self.curva_atual)
         self.SelecionaCurva()
 
     def AtualizaPosicao(self,Personagens):
