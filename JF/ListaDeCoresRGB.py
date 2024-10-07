@@ -104,12 +104,11 @@ colors = [
 (0.59,0.41,0.31),	#	DarkTan
 (0.32,0.49,0.46),	#	GreenCopper
 (0.29,0.46,0.43),	#	DkGreenCopper
-(0.52,0.39,0.39),	#	DustyRose
-(0.13,0.37,0.31),	#	HuntersGreen
-(0.55,0.09,0.09),	#	Scarlet
 (0.73,0.16,0.96),	#	Med_Purple
 (0.87,0.58,0.98),	#	Light_Purple
-(0.94,0.81,0.99)	#	Very_Light_Purple
+(0.94,0.81,0.99),	#	Very_Light_Purple
+
+
 
 ]
 
@@ -207,6 +206,12 @@ VeryDarkBrown	=	89
 DarkBrown	=	90
 DarkTan	=	91
 GreenCopper	=	92
+Med_Purple = 93
+Light_Purple = 94
+Very_Light_Purple = 95
+
+
+
 
 def SetColor (cor):
     # pass
@@ -215,5 +220,80 @@ def SetColor (cor):
     r, g, b = colors[cor]
     #glColor3f(r, g, b)
     glColor3f(*colors[cor])
+    
+def ColorSet(color):
+    glColor3f(*color)
+    
+coresCurvas = [
+    Yellow,
+    Red,
+    Green,
+    Blue,
+    Aquamarine,
+    BlueViolet,
+    Brown,
+    Coral,
+    DarkGreen,
+    DarkOrchid,
+    DarkTurquoise,
+    Firebrick,
+    ForestGreen,
+    Gold,
+    GreenYellow,
+    IndianRed,
+    LimeGreen,
+    MediumAquamarine,
+    MediumBlue,
+    MediumGoldenrod,
+    MediumOrchid,
+    MediumSeaGreen,
+    MediumSlateBlue,
+    MediumSpringGreen,
+    MidnightBlue,
+    Orange,
+    Orchid,
+    PaleGreen,
+    Plum,
+    Salmon,
+    SeaGreen,
+    SkyBlue,
+    SlateBlue,
+    SpringGreen,
+    SteelBlue,
+    Turquoise,
+    Violet,
+    Wheat,
+    NeonPink,
+    MandarinOrange
+]
+
+brighter_colors = [
+    Orange,
+    NeonBlue,
+    Orchid,
+    PaleGreen,
+    Med_Purple,
+    Pink,
+    Plum,
+    NeonPink,
+    Very_Light_Purple,
+    SpicyPink,
+    MandarinOrange,
+    BrightGold,
+    CoolCopper,
+    LightWood,
+    Light_Purple,
+    Flesh,
+    NewTan,
+    Silver,
+    Wheat,
+    SummerSky
+
+
+]
+
+
+    
+
     
 

@@ -25,8 +25,7 @@ from Poligonos import *
 from InstanciaBZ import *
 from Bezier import *
 from ListaDeCoresRGB import *
-import Funcoes as f
-import time
+
 
 
 
@@ -89,10 +88,11 @@ def CriaInstancias():
         else:
             grupos_de_pontos[chave_p2].append(pontos_curva)
 
-    curva = random.choice(pontos_curvas)
+    curva = random.randint(0, len(pontos_curvas) - 1)
 
-    Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True))
+    Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True,curva))
     Personagens[0].modelo = modeloPersonagem
+    
 
     # Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, False))
     # Personagens[1].modelo = modeloPersonagem
@@ -104,29 +104,29 @@ def CriaInstancias():
     # Personagens[1].posicao = curva.P1
     # Personagens[1].escala = Ponto(0.3,0.3,0.3) 
     
-    # n = 10
-    # for i in range(n):
-    #     if n < i / 2:
-    #         direcao = False
-    #     else:
-    #         direcao = True
-    #     CriaPersonagem(i, direcao)
+    n = 2
+    for i in range(n):
+        if n < i / 2:
+            direcao = False
+        else:
+            direcao = True
+        CriaPersonagem(i+1, direcao,curva)
 
 
 # **
 # ********************************************************************************
 
 def DesenhaPersonagens():
-    global tempo_atual
-    tempo_atual = time.time()
     for I in Personagens:
-        I.AtualizaPosicao(tempo_atual, Personagens)
+        I.AtualizaPosicao(Personagens)
         I.Desenha()
         
-def CriaPersonagem(i, direcao):
-    Personagens.append(InstanciaBZ(pontos_curvas))
+def CriaPersonagem(i, direcao,curva):
+    randCurva = random.randint(0, len(pontos_curvas) - 1)
+    while(randCurva == curva):
+        randCurva = random.randint(0, len(pontos_curvas) - 1)
+    Personagens.append(InstanciaBZ(pontos_curvas,  grupos_de_pontos, False, randCurva))
     Personagens[i].modelo = modeloPersonagem
-    Personagens[i].posicao = f.CurvaAleatoria(pontos_curvas)
     Personagens[i].direcao = direcao
         
 # ***********************************************************************************
@@ -205,17 +205,20 @@ def ler_curvas(nome_arquivo):
 
 def desenhaBezier(smooth: int):
     global pontos_curvas
+    i = 0
     for pontos_curva in pontos_curvas:
         s = 1 / smooth
         xs = (x * s for x in range(0, smooth + 1))
+        
 
-        glColor3f(pontos_curva.P0.x/2 + 0.3,pontos_curva.P1.x/3 + 0.3 ,pontos_curva.P2.x/2 + 0.3)
+        SetColor(brighter_colors[i])
         glLineWidth(pontos_curva.espessura)
         glBegin(GL_LINE_STRIP)
         for x in xs:
             r = (pontos_curva.P0 * (1 - x) ** 2) + (pontos_curva.P1 * 2 * x * (1 - x)) + (pontos_curva.P2 * x ** 2)
             glVertex2f(r.x, r.y)
         glEnd()
+        i += 1
 
 
 
@@ -242,6 +245,7 @@ def display():
 # Note the use of Python tuples to pass in: (key, x, y)
 #ESCAPE = '\033'
 ESCAPE = b'\x1b'
+SPACEBAR = b' '
 def keyboard(*args):
     print (args)
     # If escape is pressed, kill everything.
@@ -249,6 +253,11 @@ def keyboard(*args):
         os._exit(0)
     if args[0] == ESCAPE:
         os._exit(0)
+    if args[0] == SPACEBAR:
+        if Personagens[0].velocidade != 0:
+            Personagens[0].velocidade = 0
+        else:
+            Personagens[0].velocidade = Personagens[0].velocidadeInicial
 # Forca o redesenho da tela
     glutPostRedisplay()
 
@@ -258,10 +267,11 @@ def keyboard(*args):
 def arrow_keys(a_keys: int, x: int, y: int):
     if a_keys == GLUT_KEY_UP:       # Se pressionar DOWN
         Personagens[0].SelecionaCurva()
-    if a_keys == GLUT_KEY_LEFT:       # Se pressionar LEFT
-        Personagens[0].MudaDirecao(True)       
-    if a_keys == GLUT_KEY_RIGHT:       # Se pressionar LEFT
-        Personagens[0].MudaDirecao(False)       
+    if a_keys == GLUT_KEY_DOWN:# Se pressionar LEFT
+        if Personagens[0].direcao == False:
+            Personagens[0].MudaDirecao(True)   
+        else:
+            Personagens[0].MudaDirecao(False) 
 
 
     glutPostRedisplay()

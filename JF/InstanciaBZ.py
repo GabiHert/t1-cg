@@ -17,6 +17,7 @@ from ListaDeCoresRGB import *
 import random
 from Poligonos import *
 import math
+import time
 
 class InfoProximaCurva:
     def __init__(self, curva, direcao, indice):
@@ -35,7 +36,7 @@ class InfoProximaCurva:
 
 """ Classe Instancia """
 class InstanciaBZ:   
-    def __init__(self, pontos_curvas, grupos_de_pontos, usuario:bool):
+    def __init__(self, pontos_curvas, grupos_de_pontos, usuario:bool,curva):
         self.info_proxima_curva:InfoProximaCurva = None
         self.grupos_de_pontos = grupos_de_pontos
         self.flag = False
@@ -45,14 +46,17 @@ class InstanciaBZ:
         self.escala = Ponto (0.3,0.3,0.3)
         self.rotacao:float = 0.0
         self.modelo = None 
-        self.indice_curva = self.indiceAleatorio(len(pontos_curvas))
-        self.t = 0
+        self.indice_curva = curva
+        self.t = 0.5
         self.curva_atual = pontos_curvas[self.indice_curva]
-        self.velocidade = 2.5
+        self.velocidadeInicial = 1.5
+        self.velocidade = self.velocidadeInicial
         if usuario:
             self.cor = Red
+            self.width = 5
         else:
-            self.cor = YellowGreen
+            self.cor = random.choice(coresCurvas)
+            self.width = 3
         self.tempo_inicial = 0.0
         self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
         self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
@@ -80,9 +84,10 @@ class InstanciaBZ:
         glRotatef(self.rotacao, 0,0,1)
         glScalef(self.escala.x, self.escala.y, self.escala.z)
         SetColor(self.cor)
-        glLineWidth(3)
+        glLineWidth(self.width)
         self.modelo.desenhaPoligono()
         glPopMatrix()
+        
 
     def verifica_colisao(self, Personagens):
 
@@ -119,18 +124,24 @@ class InstanciaBZ:
         self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
         self.SelecionaCurva()
 
-    def AtualizaPosicao(self, tempo_atual, Personagens):
+    def AtualizaPosicao(self,Personagens):
+        global tempo_atual
+        tempo_atual = time.time()
+        
         if self.flag2:
             tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
         else:
             tempo_decorrido = 0.0        
             self.flag2 = True
 
-        colisao = self.verifica_colisao(Personagens)
-        if colisao == True:
-            print("COLISAO PARCEIRO!!!!")
-            for personagem in Personagens:
-                personagem.velocidade = 0
+        if self.usuario:
+            colisao = self.verifica_colisao(Personagens)
+            if colisao == True:
+                print("COLISAO PARCEIRO!!!!")
+                self.velocidade = 0
+                # for personagem in Personagens:
+                #     personagem.velocidade = 0
+                #     personagem.cor = YellowGreen
 
         self.tempo_inicial = tempo_atual
 
