@@ -93,18 +93,7 @@ def CriaInstancias():
     Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True,curva))
     Personagens[0].modelo = modeloPersonagem
     
-
-    # Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, False))
-    # Personagens[1].modelo = modeloPersonagem
-
-    
-    # Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True))
-    # Personagens[1].modelo = modeloPersonagem
-    # Personagens[1].rotacao = 0
-    # Personagens[1].posicao = curva.P1
-    # Personagens[1].escala = Ponto(0.3,0.3,0.3) 
-    
-    n = 2
+    n = 10
     for i in range(n):
         if n < i / 2:
             direcao = False

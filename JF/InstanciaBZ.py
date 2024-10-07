@@ -201,15 +201,6 @@ class InstanciaBZ:
     
         result = grupos_de_pontos[chave]
 
-        print("Curva atual indo para")
-        print(ponto.x, ponto.y)
-    
-        print("Curvas adjacentes")
-        for curva in result:
-            print("P0:",curva.P0.x, curva.P0.y)
-            print("P2:",curva.P2.x, curva.P2.y)
-        
-        print('\n')
         return result
     
     def calculaDirecao(self, ponto_curva_atual,ponto_proxima_curva):

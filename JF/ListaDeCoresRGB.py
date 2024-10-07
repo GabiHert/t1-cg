@@ -47,8 +47,8 @@ colors = [
 (0.917647,0.917647,0.678431),	#	MediumGoldenrod
 (0.576471,0.439216,0.858824),	#	MediumOrchid
 (0.258824,0.435294,0.258824),	#	MediumSeaGreen
-(0.498039,1.0,),	#	MediumSlateBlue
-(0.498039,1.0,),	#	MediumSpringGreen
+(0.498039,1.0,0),	#	MediumSlateBlue
+(0.498039,1.0,0),	#	MediumSpringGreen
 (0.439216,0.858824,0.858824),	#	MediumTurquoise
 (0.858824,0.439216,0.576471),	#	MediumVioletRed
 (0.184314,0.184314,0.309804),	#	MidnightBlue
