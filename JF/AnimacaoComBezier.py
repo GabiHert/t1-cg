@@ -94,6 +94,9 @@ def CriaInstancias():
     Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True))
     Personagens[0].modelo = modeloPersonagem
 
+    # Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, False))
+    # Personagens[1].modelo = modeloPersonagem
+
     
     # Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True))
     # Personagens[1].modelo = modeloPersonagem
@@ -253,12 +256,12 @@ def keyboard(*args):
 #  arrow_keys ( a_keys: int, x: int, y: int )   
 # **********************************************************************
 def arrow_keys(a_keys: int, x: int, y: int):
-    if a_keys == GLUT_KEY_UP:         # Se pressionar UP
-        pass
-    if a_keys == GLUT_KEY_DOWN:       # Se pressionar DOWN
+    if a_keys == GLUT_KEY_UP:       # Se pressionar DOWN
         Personagens[0].SelecionaCurva()
     if a_keys == GLUT_KEY_LEFT:       # Se pressionar LEFT
-        Personagens[0].MudaDirecao()       
+        Personagens[0].MudaDirecao(True)       
+    if a_keys == GLUT_KEY_RIGHT:       # Se pressionar LEFT
+        Personagens[0].MudaDirecao(False)       
 
 
     glutPostRedisplay()

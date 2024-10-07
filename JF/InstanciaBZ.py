@@ -45,10 +45,14 @@ class InstanciaBZ:
         self.escala = Ponto (0.3,0.3,0.3)
         self.rotacao:float = 0.0
         self.modelo = None 
+        self.indice_curva = self.indiceAleatorio(len(pontos_curvas))
         self.t = 0
-        self.curva_atual = pontos_curvas[self.indiceAleatorio(len(pontos_curvas))]
+        self.curva_atual = pontos_curvas[self.indice_curva]
         self.velocidade = 2.5
-        self.cor = YellowGreen
+        if usuario:
+            self.cor = Red
+        else:
+            self.cor = YellowGreen
         self.tempo_inicial = 0.0
         self.comprimento_curva = f.calculaComprimentoDaCurva(self.curva_atual)
         self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
@@ -107,8 +111,13 @@ class InstanciaBZ:
         self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao,indice)
         self.curvas_adjacentes[indice].espessura = 10
 
-    def MudaDirecao(self):
-        self.direcao = not self.direcao
+    def MudaDirecao(self, direcao):
+        if self.info_proxima_curva != None:
+            self.curvas_adjacentes[self.info_proxima_curva.indice].espessura = 2
+        self.direcao = direcao
+        ponto_destino = self.calculaPontoDestino(self.direcao, self.curva_atual.P0, self.curva_atual.P2)
+        self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
+        self.SelecionaCurva()
 
     def AtualizaPosicao(self, tempo_atual, Personagens):
         if self.flag2:
@@ -146,10 +155,13 @@ class InstanciaBZ:
             self.SelecionaCurva()
         
         if esta_no_meio and not self.usuario:
-            ponto_destino = self.calculaPontoDestino(self.direcao, self.ponto_inicial, self.ponto_final)
+            ponto_destino = self.calculaPontoDestino(self.direcao, self.curva_atual.P0, self.curva_atual.P2)
             self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
             indice = self.calculaProximoInidiceDeCurva(self.curvas_adjacentes)
-            self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], self.direcao,indice)
+            while indice == self.indice_curva:
+                indice = self.calculaProximoInidiceDeCurva(self.curvas_adjacentes)
+            direcao = self.calculaDirecao(self.ponto_final,self.curvas_adjacentes[indice].P0)
+            self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao,indice)
         elif chegou_ao_fim:  
             self.vaiParaProximaCurva(self.info_proxima_curva, self.curvas_adjacentes)
             self.flag = False
@@ -206,6 +218,7 @@ class InstanciaBZ:
         self.ponto_inicial = info_proxima_curva.ponto_inicial
         self.ponto_final = info_proxima_curva.ponto_final
         self.comprimento_curva = info_proxima_curva.comprimento_curva
+        self.indice_curva = info_proxima_curva.indice
 
 def posicaoAproximada(ponto, posicao):
     aproximacao = 0.2
