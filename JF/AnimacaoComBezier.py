@@ -79,18 +79,19 @@ def CriaInstancias():
     for pontos_curva in pontos_curvas:
         chave_p0 = geraChave(pontos_curva.P0)
         if chave_p0 not in grupos_de_pontos:
-            grupos_de_pontos[chave_p0] = []
-        grupos_de_pontos[chave_p0].append(pontos_curva)
+            grupos_de_pontos[chave_p0] = [pontos_curva]
+        else:
+            grupos_de_pontos[chave_p0].append(pontos_curva)
 
         chave_p2 = geraChave(pontos_curva.P2)
-            # Adiciona a curva ao grupo de P2
         if chave_p2 not in grupos_de_pontos:
-            grupos_de_pontos[chave_p2] = []
-        grupos_de_pontos[chave_p2].append(pontos_curva)
+            grupos_de_pontos[chave_p2] = [pontos_curva]
+        else:
+            grupos_de_pontos[chave_p2].append(pontos_curva)
 
     curva = random.choice(pontos_curvas)
 
-    Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, False))
+    Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True))
     Personagens[0].modelo = modeloPersonagem
 
     
@@ -255,11 +256,9 @@ def arrow_keys(a_keys: int, x: int, y: int):
     if a_keys == GLUT_KEY_UP:         # Se pressionar UP
         pass
     if a_keys == GLUT_KEY_DOWN:       # Se pressionar DOWN
-        pass
+        Personagens[0].SelecionaCurva()
     if a_keys == GLUT_KEY_LEFT:       # Se pressionar LEFT
-        Personagens[0].direcao = False         
-    if a_keys == GLUT_KEY_RIGHT:       # Se pressionar LEFT
-        Personagens[0].direcao = True         
+        Personagens[0].MudaDirecao()       
 
 
     glutPostRedisplay()
