@@ -89,22 +89,19 @@ class InstanciaBZ:
         
 
     def verifica_colisao(self, Personagens):
-
-        for outra in Personagens:
-            if outra != self:  
-                if outra.curva_atual == self.curva_atual:
-                    distancia = math.sqrt( (self.posicao.x - outra.posicao.x)  ** 2 + (self.posicao.y - outra.posicao.y)   ** 2)
+        for outro in Personagens:
+            if outro != self:  
+                if outro.curva_atual == self.curva_atual:
+                    distancia = math.sqrt( (self.posicao.x - outro.posicao.x)  ** 2 + (self.posicao.y - outro.posicao.y)   ** 2)
 
                     if distancia < (0.35):
-                        print("Distância:", distancia)
                         return True
                 else:
-                    if self.ponto_final == outra.ponto_final:
+                    if self.ponto_final == outro.ponto_final:
                         distancia_self = math.sqrt((self.posicao.x - self.ponto_final.x) ** 2 + (self.posicao.y - self.ponto_final.y) ** 2)
-                        distancia_outra = math.sqrt((outra.posicao.x - outra.ponto_final.x) ** 2 + (outra.posicao.y - outra.ponto_final.y) ** 2)
+                        distancia_outro = math.sqrt((outro.posicao.x - outro.ponto_final.x) ** 2 + (outro.posicao.y - outro.ponto_final.y) ** 2)
                     
-                        if (distancia_self < 0.05) and (distancia_outra < 0.05):  
-                            print("Colisão na interseção!")
+                        if (distancia_self < 0.05) and (distancia_outro < 0.05):  
                             return True
 
         return False
@@ -162,7 +159,6 @@ class InstanciaBZ:
         if self.usuario:
             colisao = self.verifica_colisao(Personagens)
             if colisao == True:
-                print("COLISAO PARCEIRO!!!!")
                 self.velocidade = 0
                 os._exit(0)
 
