@@ -91,14 +91,21 @@ class InstanciaBZ:
     def verifica_colisao(self, Personagens):
 
         for outra in Personagens:
-            if outra != self:  # Não verificar colisão consigo mesmo
+            if outra != self:  
                 if outra.curva_atual == self.curva_atual:
                     distancia = math.sqrt( (self.posicao.x - outra.posicao.x)  ** 2 + (self.posicao.y - outra.posicao.y)   ** 2)
 
-                # Verifique se a distância é menor que um limite (neste caso, 0.05)
                     if distancia < (0.35):
                         print("Distância:", distancia)
                         return True
+                else:
+                    if self.ponto_final == outra.ponto_final:
+                        distancia_self = math.sqrt((self.posicao.x - self.ponto_final.x) ** 2 + (self.posicao.y - self.ponto_final.y) ** 2)
+                        distancia_outra = math.sqrt((outra.posicao.x - outra.ponto_final.x) ** 2 + (outra.posicao.y - outra.ponto_final.y) ** 2)
+                    
+                        if (distancia_self < 0.05) and (distancia_outra < 0.05):  
+                            print("Colisão na interseção!")
+                            return True
 
         return False
 
@@ -173,7 +180,7 @@ class InstanciaBZ:
             chegou_ao_fim = self.t >= 1
         else: 
             self.t -= deltaT
-            chegou_ao_fim = self.t <= 0
+            chegou_ao_fim = self.t <= 0  
         
         if self.usuario and self.info_proxima_curva == None:
             self.SelecionaCurva()
@@ -234,6 +241,7 @@ class InstanciaBZ:
         self.ponto_final = info_proxima_curva.ponto_final
         self.comprimento_curva = info_proxima_curva.comprimento_curva
         self.indice_curva = info_proxima_curva.indice
+        return 
 
 def posicaoAproximada(ponto, posicao):
     aproximacao = 0.2
