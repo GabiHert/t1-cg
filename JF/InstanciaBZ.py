@@ -103,17 +103,33 @@ class InstanciaBZ:
 
         return False
 
+    # def SelecionaCurva(self):
+    #     indice = 0
+    #     self.curva_atual.espessura = 2
+    #     if self.info_proxima_curva != None:
+    #         if indice >= len(self.curvas_adjacentes):
+    #             indice = 0
+    #             self.curvas_adjacentes[self.info_proxima_curva.indice].espessura = 2
+    #         indice = self.info_proxima_curva.indice + 1
+            
+        
+    #     direcao = self.calculaDirecao(self.ponto_final,self.curvas_adjacentes[indice].P0)
+    #     self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao,indice)
+    #     self.curvas_adjacentes[indice].espessura = 10
+    
     def SelecionaCurva(self):
         indice = 0
         self.curva_atual.espessura = 2
-        if self.info_proxima_curva != None:
+        if self.info_proxima_curva is not None:
+            if self.info_proxima_curva.indice >= len(self.curvas_adjacentes):
+                self.info_proxima_curva.indice = 0
             self.curvas_adjacentes[self.info_proxima_curva.indice].espessura = 2
             indice = self.info_proxima_curva.indice + 1
             if indice >= len(self.curvas_adjacentes):
                 indice = 0
-        
-        direcao = self.calculaDirecao(self.ponto_final,self.curvas_adjacentes[indice].P0)
-        self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao,indice)
+
+        direcao = self.calculaDirecao(self.ponto_final, self.curvas_adjacentes[indice].P0)
+        self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao, indice)
         self.curvas_adjacentes[indice].espessura = 10
 
     def MudaDirecao(self, direcao):
@@ -129,6 +145,17 @@ class InstanciaBZ:
             self.ponto_inicial = f.CalculaPontoXYDaCurva(1, self.curva_atual)
             self.ponto_final = f.CalculaPontoXYDaCurva(0,  self.curva_atual)
         self.SelecionaCurva()
+        
+    def MudaDirecaoInimigos(self,direcao):
+        self.direcao = direcao
+        ponto_destino = self.calculaPontoDestino(self.direcao, self.curva_atual.P0, self.curva_atual.P2)
+        self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
+        if direcao:
+            self.ponto_inicial = f.CalculaPontoXYDaCurva(0, self.curva_atual)
+            self.ponto_final = f.CalculaPontoXYDaCurva(1, self.curva_atual)
+        else:
+            self.ponto_inicial = f.CalculaPontoXYDaCurva(1, self.curva_atual)
+            self.ponto_final = f.CalculaPontoXYDaCurva(0,  self.curva_atual)
 
     def AtualizaPosicao(self,Personagens):
         global tempo_atual
@@ -145,6 +172,7 @@ class InstanciaBZ:
             if colisao == True:
                 print("COLISAO PARCEIRO!!!!")
                 self.velocidade = 0
+                os._exit(0)
                 # for personagem in Personagens:
                 #     personagem.velocidade = 0
                 #     personagem.cor = YellowGreen

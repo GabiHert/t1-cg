@@ -95,11 +95,12 @@ def CriaInstancias():
     
     n = 10
     for i in range(n):
-        if n < i / 2:
+        if 0  == i % 2:
             direcao = False
         else:
             direcao = True
         CriaPersonagem(i+1, direcao,curva)
+    
 
 
 # **
@@ -116,7 +117,9 @@ def CriaPersonagem(i, direcao,curva):
         randCurva = random.randint(0, len(pontos_curvas) - 1)
     Personagens.append(InstanciaBZ(pontos_curvas,  grupos_de_pontos, False, randCurva))
     Personagens[i].modelo = modeloPersonagem
-    Personagens[i].direcao = direcao
+    Personagens[i].MudaDirecaoInimigos(direcao)
+    
+    
         
 # ***********************************************************************************
 def init():
@@ -235,6 +238,8 @@ def display():
 #ESCAPE = '\033'
 ESCAPE = b'\x1b'
 SPACEBAR = b' '
+P = b'p'
+L = b'l'
 def keyboard(*args):
     print (args)
     # If escape is pressed, kill everything.
@@ -247,7 +252,7 @@ def keyboard(*args):
             Personagens[0].velocidade = 0
         else:
             Personagens[0].velocidade = Personagens[0].velocidadeInicial
-# Forca o redesenho da tela
+    # Forca o redesenho da tela
     glutPostRedisplay()
 
 # **********************************************************************
