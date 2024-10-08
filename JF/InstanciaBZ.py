@@ -101,7 +101,7 @@ class InstanciaBZ:
                         distancia_self = math.sqrt((self.posicao.x - self.ponto_final.x) ** 2 + (self.posicao.y - self.ponto_final.y) ** 2)
                         distancia_outro = math.sqrt((outro.posicao.x - outro.ponto_final.x) ** 2 + (outro.posicao.y - outro.ponto_final.y) ** 2)
                     
-                        if (distancia_self < 0.05) and (distancia_outro < 0.05):  
+                        if (distancia_self < 0.2) and (distancia_outro < 0.2):  
                             return True
 
         return False
