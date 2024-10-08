@@ -25,6 +25,7 @@ from Poligonos import *
 from InstanciaBZ import *
 from Bezier import *
 from ListaDeCoresRGB import *
+import time
 
 
 
@@ -93,8 +94,8 @@ def CriaInstancias():
     Personagens.append(InstanciaBZ(pontos_curvas, grupos_de_pontos, True,curva))
     Personagens[0].modelo = modeloPersonagem
     
-    n = 10
-    for i in range(n):
+    numero_inimigos = 10
+    for i in range(numero_inimigos):
         if 0  == i % 2:
             direcao = False
         else:
@@ -103,12 +104,11 @@ def CriaInstancias():
     
 
 
-# **
 # ********************************************************************************
 
 def DesenhaPersonagens():
     for I in Personagens:
-        I.AtualizaPosicao(Personagens)
+        I.AtualizaPosicao(Personagens, tempo_atual)
         I.Desenha()
         
 def CriaPersonagem(i, direcao,curva):
@@ -167,13 +167,6 @@ def reshape(w,h):
 
 
 # ***********************************************************************************
-# # Versao 
-# def DesenhaPoligonoDeControle(curva):
-#     glBegin(GL_LINE_STRIP)
-#     for v in range(0,3):
-#         P = Curvas[curva].getPC(v)
-#         glVertex2d(P.x, P.y)
-#     glEnd()
 
 # ***********************************************************************************
 def ler_pontos_de_controle(nome_arquivo):
@@ -216,6 +209,8 @@ def desenhaBezier(smooth: int):
 
 # ***********************************************************************************
 def display():
+    global tempo_atual
+    tempo_atual = time.time()
 
 	# Limpa a tela coma cor de fundo
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -242,7 +237,6 @@ P = b'p'
 L = b'l'
 def keyboard(*args):
     print (args)
-    # If escape is pressed, kill everything.
     if args[0] == b'q':
         os._exit(0)
     if args[0] == ESCAPE:
@@ -259,9 +253,9 @@ def keyboard(*args):
 #  arrow_keys ( a_keys: int, x: int, y: int )   
 # **********************************************************************
 def arrow_keys(a_keys: int, x: int, y: int):
-    if a_keys == GLUT_KEY_UP:       # Se pressionar DOWN
+    if a_keys == GLUT_KEY_UP:       
         Personagens[0].SelecionaCurva()
-    if a_keys == GLUT_KEY_DOWN:# Se pressionar LEFT
+    if a_keys == GLUT_KEY_DOWN:
         if Personagens[0].direcao == False:
             Personagens[0].MudaDirecao(True)   
         else:
@@ -277,7 +271,6 @@ def arrow_keys(a_keys: int, x: int, y: int):
 
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_RGBA)
-# Define o tamanho inicial da janela grafica do programa
 glutInitWindowSize(720, 720)
 glutInitWindowPosition(100, 100)
 wind = glutCreateWindow("Exemplo de Criacao de Curvas Bezier")

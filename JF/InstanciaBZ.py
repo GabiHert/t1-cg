@@ -17,7 +17,6 @@ from ListaDeCoresRGB import *
 import random
 from Poligonos import *
 import math
-import time
 
 class InfoProximaCurva:
     def __init__(self, curva, direcao, indice):
@@ -103,19 +102,6 @@ class InstanciaBZ:
 
         return False
 
-    # def SelecionaCurva(self):
-    #     indice = 0
-    #     self.curva_atual.espessura = 2
-    #     if self.info_proxima_curva != None:
-    #         if indice >= len(self.curvas_adjacentes):
-    #             indice = 0
-    #             self.curvas_adjacentes[self.info_proxima_curva.indice].espessura = 2
-    #         indice = self.info_proxima_curva.indice + 1
-            
-        
-    #     direcao = self.calculaDirecao(self.ponto_final,self.curvas_adjacentes[indice].P0)
-    #     self.info_proxima_curva = InfoProximaCurva(self.curvas_adjacentes[indice], direcao,indice)
-    #     self.curvas_adjacentes[indice].espessura = 10
     
     def SelecionaCurva(self):
         indice = 0
@@ -157,12 +143,11 @@ class InstanciaBZ:
             self.ponto_inicial = f.CalculaPontoXYDaCurva(1, self.curva_atual)
             self.ponto_final = f.CalculaPontoXYDaCurva(0,  self.curva_atual)
 
-    def AtualizaPosicao(self,Personagens):
-        global tempo_atual
-        tempo_atual = time.time()
+    def AtualizaPosicao(self,Personagens,tempo_atual):
+        
         
         if self.flag2:
-            tempo_decorrido = tempo_atual - self.tempo_inicial  # Calcula o tempo decorrido
+            tempo_decorrido = tempo_atual - self.tempo_inicial  
         else:
             tempo_decorrido = 0.0        
             self.flag2 = True
@@ -173,19 +158,13 @@ class InstanciaBZ:
                 print("COLISAO PARCEIRO!!!!")
                 self.velocidade = 0
                 os._exit(0)
-                # for personagem in Personagens:
-                #     personagem.velocidade = 0
-                #     personagem.cor = YellowGreen
 
         self.tempo_inicial = tempo_atual
 
-        # Calcular o deslocamento com base na velocidade e no tempo decorrido
         deslocamento = self.velocidade * tempo_decorrido
 
-        # Calcular deltaT com base no deslocamento e no comprimento da curva
         deltaT = deslocamento / self.comprimento_curva
 
-        # Atualize o parâmetro t para mover o personagem ao longo da curva
         esta_no_meio = self.t > 0.4 and self.info_proxima_curva == None
 
         chegou_ao_fim = False
@@ -199,7 +178,7 @@ class InstanciaBZ:
         if self.usuario and self.info_proxima_curva == None:
             self.SelecionaCurva()
         
-        if esta_no_meio and not self.usuario:
+        if esta_no_meio and not self.usuario: #
             ponto_destino = self.calculaPontoDestino(self.direcao, self.curva_atual.P0, self.curva_atual.P2)
             self.curvas_adjacentes = self.calcularCurvasAdjacentes(ponto_destino,self.grupos_de_pontos)
             indice = self.calculaProximoInidiceDeCurva(self.curvas_adjacentes)
