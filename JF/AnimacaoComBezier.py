@@ -1,21 +1,7 @@
 # ***********************************************************************************
 #   ExibePoligonos.py
-#       Autor: Márcio Sarroglia Pinho
-#       pinho@pucrs.br
-#   Este programa cria um conjunto de INSTANCIAS
-#   Para construir este programa, foi utilizada a biblioteca PyOpenGL, disponível em
-#   http://pyopengl.sourceforge.net/documentation/index.html
-#
-#   Sugere-se consultar também as páginas listadas
-#   a seguir:
-#   http://bazaar.launchpad.net/~mcfletch/pyopengl-demo/trunk/view/head:/PyOpenGL-Demo/NeHe/lesson1.py
-#   http://pyopengl.sourceforge.net/documentation/manual-3.0/index.html#GLUT
-#
-#   No caso de usar no MacOS, pode ser necessário alterar o arquivo ctypesloader.py,
-#   conforme a descrição que está nestes links:
-#   https://stackoverflow.com/questions/63475461/unable-to-import-opengl-gl-in-python-on-macos
-#   https://stackoverflow.com/questions/6819661/python-location-on-mac-osx
-#   Veja o arquivo Patch.rtf, armazenado na mesma pasta deste fonte.
+#       Autores: Joao Filipe Rocha, Ricardo Batista e Gabriel Herter
+#       Trabalho 1 - CG
 # ***********************************************************************************
 
 from OpenGL.GL import *
@@ -73,8 +59,7 @@ def CriaInstancias():
         P1 = pontos_controle[curva[1]]
         P2 = pontos_controle[curva[2]]
         pontos_curvas.append(PontosCurva(P0,P1,P2))
-
-    desenhaBezier(5)
+ 
 
     for pontos_curva in pontos_curvas:
         chave_p0 = geraChave(pontos_curva.P0)
@@ -233,8 +218,6 @@ def display():
 #ESCAPE = '\033'
 ESCAPE = b'\x1b'
 SPACEBAR = b' '
-P = b'p'
-L = b'l'
 def keyboard(*args):
     print (args)
     if args[0] == b'q':
